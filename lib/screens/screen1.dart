@@ -8,6 +8,10 @@ class TodoApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
+      title: 'Todo App',
+      initialBinding: BindingsBuilder(() {
+        Get.put(TodoController());
+      }),
       debugShowCheckedModeBanner: false,
       home: TodoScreen(),
     );
@@ -20,6 +24,7 @@ class TodoScreen extends StatelessWidget {
 
   TodoScreen({super.key});
 
+  @override
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -79,7 +84,6 @@ class TodoScreen extends StatelessWidget {
                             showUpdateDialog(context, todo.id, todo.title);
                           },
                         ),
-                    
                         IconButton(
                           icon: const Icon(Icons.delete),
                           onPressed: () => controller.removeTodo(todo.id),
