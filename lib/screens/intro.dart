@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:todo_list/screens/screen1.dart';
+import 'package:todo_list/screens/constants.dart';
 
 class IntroScreen extends StatefulWidget {
   const IntroScreen({super.key});
@@ -102,7 +103,7 @@ class _IntroScreenState extends State<IntroScreen>
           },
         ),
       ),
-      backgroundColor: const Color.fromRGBO(210, 4, 45, 100),
+      backgroundColor: kPrimaryColor,
     );
   }
 }

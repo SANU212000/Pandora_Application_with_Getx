@@ -1,3 +1,6 @@
+import 'dart:math';
+import 'dart:ui';
+
 import 'package:get/get.dart';
 import 'package:uuid/uuid.dart';
 import 'package:http/http.dart' as http;
@@ -7,7 +10,7 @@ import 'todo_list.dart';
 class TodoController extends GetxController {
   var todos = <Todo>[].obs;
   final String apiUrl =
-      'https://crudcrud.com/api/f35663ed71fb48dfb5e1e8498cd67001/todos';
+      'https://crudcrud.com/api/2cd233f706894574b1761c0f1d005cd2/todos';
 
   @override
   void onInit() {
@@ -30,11 +33,21 @@ class TodoController extends GetxController {
   }
 
   Future<void> addTodo(String title) async {
+    final List<Color> colorList = [
+      const Color.fromARGB(255, 254, 19, 2),
+      const Color.fromARGB(255, 7, 62, 9),
+      const Color.fromARGB(255, 2, 60, 108),
+      const Color.fromARGB(255, 72, 4, 84),
+      const Color.fromARGB(255, 3, 126, 85),
+    ];
+
+    final Color cardColor = colorList[Random().nextInt(colorList.length)];
     final newTodo = Todo(
-      id: const Uuid().v4(),
-      title: title,
-      isCompleted: false,
-    );
+        id: const Uuid().v4(),
+        title: title,
+        isCompleted: false,
+        color: cardColor);
+
     try {
       final response = await http.post(
         Uri.parse(apiUrl),
@@ -44,12 +57,16 @@ class TodoController extends GetxController {
           'isCompleted': newTodo.isCompleted,
         }),
       );
+
       if (response.statusCode == 201) {
         final responseData = json.decode(response.body);
+
         newTodo.id = responseData['_id'];
+
         todos.add(newTodo);
       } else {
-        throw Exception('Failed to save todo');
+        throw Exception(
+            'Failed to save todo. Status code: ${response.statusCode}');
       }
     } catch (e) {
       print('Error saving todo: $e');
@@ -68,10 +85,16 @@ class TodoController extends GetxController {
   Future<void> toggleTodoStatus(String id) async {
     final index = todos.indexWhere((todo) => todo.id == id);
     if (index != -1) {
-      todos[index].isCompleted = !todos[index].isCompleted;
-      todos.refresh(); // Notify listeners of the change
-      await updateTodoToApi(
-          todos[index]); // Persist the updated status to the API
+      final originalStatus = todos[index].isCompleted;
+      todos[index].isCompleted = !originalStatus;
+      todos.refresh();
+      try {
+        await updateTodoToApi(todos[index]);
+      } catch (error) {
+        todos[index].isCompleted = originalStatus;
+        todos.refresh();
+        print('Error updating status: $error');
+      }
     }
   }
 

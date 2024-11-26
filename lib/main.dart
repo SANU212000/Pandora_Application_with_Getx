@@ -21,7 +21,7 @@ class TodoApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         initialRoute: '/',
         routes: {
-          '/': (context) => IntroScreen(),
+          '/': (context) => const IntroScreen(),
           '/home': (context) => TodoScreen(),
         });
   }
