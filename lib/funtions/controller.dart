@@ -10,7 +10,7 @@ import 'todo_list.dart';
 class TodoController extends GetxController {
   var todos = <Todo>[].obs;
   final String apiUrl =
-      'https://crudcrud.com/api/2cd233f706894574b1761c0f1d005cd2/todos';
+      'https://crudcrud.com/api/11279db0bbdc4c05a6464b429cac2a14/todos';
 
   @override
   void onInit() {
@@ -34,11 +34,11 @@ class TodoController extends GetxController {
 
   Future<void> addTodo(String title) async {
     final List<Color> colorList = [
-      const Color.fromARGB(255, 254, 19, 2),
-      const Color.fromARGB(255, 7, 62, 9),
-      const Color.fromARGB(255, 2, 60, 108),
-      const Color.fromARGB(255, 72, 4, 84),
-      const Color.fromARGB(255, 3, 126, 85),
+      const Color.fromARGB(255, 175, 16, 5),
+      const Color.fromARGB(255, 3, 67, 5),
+      const Color.fromARGB(255, 10, 75, 128),
+      const Color.fromARGB(255, 85, 11, 98),
+      const Color.fromARGB(255, 11, 119, 83),
     ];
 
     final Color cardColor = colorList[Random().nextInt(colorList.length)];
@@ -103,7 +103,10 @@ class TodoController extends GetxController {
       final response = await http.put(
         Uri.parse('$apiUrl/${todo.id}'),
         headers: {'Content-Type': 'application/json'},
-        body: json.encode(todo.toJson()),
+        body: json.encode({
+          'title': todo.title,
+          'isCompleted': todo.isCompleted,
+        }),
       );
       if (response.statusCode != 200) {
         throw Exception('Failed to update todo');
@@ -123,8 +126,8 @@ class TodoController extends GetxController {
       if (newStatus != null) {
         todos[index].isCompleted = newStatus;
       }
-      todos.refresh(); // Notify listeners of the update
-      await updateTodoToApi(todos[index]); // Call API to save changes
+      todos.refresh();
+      await updateTodoToApi(todos[index]);
     }
   }
 

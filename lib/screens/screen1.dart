@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:todo_list/funtions/controller.dart';
 import 'package:todo_list/funtions/todo_list.dart';
-import 'dart:math';
 import 'package:todo_list/screens/add_task.dart';
 import 'package:todo_list/screens/constants.dart';
 
@@ -42,84 +41,89 @@ class TodoScreen extends StatelessWidget {
               ),
             ),
             Expanded(
-                child: Card(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(30.0),
-              ),
-              elevation: 10,
-              shadowColor: kPrimaryColor,
-              surfaceTintColor: kWhiteColor,
-              child: Padding(
-                padding: const EdgeInsets.only(top: 30.0, bottom: 14),
-                child: Obx(() {
-                  if (controller.todos.isEmpty) {
-                    return const Center(
-                      child: Text(
-                        'No tasks available. Add some!',
-                        style: TextStyle(fontSize: 18, color: Colors.grey),
+                child: SizedBox(
+                    width: 350,
+                    child: Card(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30.0),
                       ),
-                    );
-                  }
+                      elevation: 10,
+                      shadowColor: kPrimaryColor,
+                      surfaceTintColor: kWhiteColor,
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 30.0, bottom: 14),
+                        child: Obx(() {
+                          if (controller.todos.isEmpty) {
+                            return const Center(
+                              child: Text(
+                                'No tasks available. Add some!',
+                                style:
+                                    TextStyle(fontSize: 18, color: Colors.grey),
+                              ),
+                            );
+                          }
 
-                  return AnimatedContainer(
-                    duration: const Duration(milliseconds: 500),
-                    curve: Curves.easeIn,
-                    child: ListView.builder(
-                      itemCount: controller.todos.length,
-                      itemBuilder: (context, index) {
-                        final todo = controller.todos[index];
-                        final double offset = 10.0 * index;
-                        return Transform.translate(
-                          offset: Offset(0, offset),
-                          child: Dismissible(
-                            key: Key(todo.id),
-                            direction: DismissDirection.endToStart,
-                            background: Container(
-                              color: Colors.red,
-                              alignment: Alignment.centerRight,
-                              padding: const EdgeInsets.only(right: 10),
-                              child:
-                                  const Icon(Icons.delete, color: Colors.white),
+                          return AnimatedContainer(
+                            duration: const Duration(milliseconds: 100),
+                            curve: Curves.easeOut,
+                            child: ListView.builder(
+                              itemCount: controller.todos.length,
+                              itemBuilder: (context, index) {
+                                final todo = controller.todos[index];
+                                final double offset = -30.0 * index;
+                                return Transform.translate(
+                                  offset: Offset(4, offset),
+                                  child: Dismissible(
+                                    key: Key(todo.id),
+                                    direction: DismissDirection.endToStart,
+                                    background: Container(
+                                      color: Colors.red,
+                                      alignment: Alignment.centerRight,
+                                      padding: const EdgeInsets.only(right: 10),
+                                      child: const Icon(Icons.delete,
+                                          color: Colors.white),
+                                    ),
+                                    confirmDismiss: (direction) async {
+                                      return await showDialog(
+                                        context: context,
+                                        builder: (context) => AlertDialog(
+                                          title: const Text('Delete Task'),
+                                          content: const Text(
+                                              'Are you sure you want to delete this task?'),
+                                          actions: [
+                                            TextButton(
+                                              onPressed: () =>
+                                                  Navigator.of(context)
+                                                      .pop(false),
+                                              child: const Text('Cancel'),
+                                            ),
+                                            TextButton(
+                                              onPressed: () =>
+                                                  Navigator.of(context)
+                                                      .pop(true),
+                                              child: const Text('Delete'),
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                    },
+                                    onDismissed: (direction) {
+                                      controller.removeTodo(todo.id);
+                                      Get.snackbar(
+                                        'Task Deleted',
+                                        '${todo.title} has been removed.',
+                                        snackPosition: SnackPosition.TOP,
+                                      );
+                                    },
+                                    child: buildStackedTaskTile(todo, context),
+                                  ),
+                                );
+                              },
                             ),
-                            confirmDismiss: (direction) async {
-                              return await showDialog(
-                                context: context,
-                                builder: (context) => AlertDialog(
-                                  title: const Text('Delete Task'),
-                                  content: const Text(
-                                      'Are you sure you want to delete this task?'),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () =>
-                                          Navigator.of(context).pop(false),
-                                      child: const Text('Cancel'),
-                                    ),
-                                    TextButton(
-                                      onPressed: () =>
-                                          Navigator.of(context).pop(true),
-                                      child: const Text('Delete'),
-                                    ),
-                                  ],
-                                ),
-                              );
-                            },
-                            onDismissed: (direction) {
-                              controller.removeTodo(todo.id);
-                              Get.snackbar(
-                                'Task Deleted',
-                                '${todo.title} has been removed.',
-                                snackPosition: SnackPosition.BOTTOM,
-                              );
-                            },
-                            child: buildStackedTaskTile(todo, context),
-                          ),
-                        );
-                      },
-                    ),
-                  );
-                }),
-              ),
-            )),
+                          );
+                        }),
+                      ),
+                    ))),
             Padding(
               padding: const EdgeInsets.only(bottom: 30),
               child: ElevatedButton(
@@ -149,29 +153,31 @@ class TodoScreen extends StatelessWidget {
 
   Widget buildStackedTaskTile(Todo todo, BuildContext context) {
     return Container(
-      height: 100,
+      height: 130,
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
       decoration: BoxDecoration(
         color: todo.isCompleted ? Colors.grey : todo.color,
-        borderRadius: BorderRadius.circular(6),
+        borderRadius: BorderRadius.circular(16),
         boxShadow: const [
           BoxShadow(
             color: Colors.black26,
             blurRadius: 4,
-            offset: Offset(0, 2),
+            offset: Offset(-1, -12),
           ),
         ],
       ),
       child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
         title: Text(
           todo.title,
           style: TextStyle(
             fontFamily: "intro",
-            fontSize: 18,
+            fontSize: 20,
             fontWeight: FontWeight.bold,
             color: todo.isCompleted ? Colors.black : Colors.white,
           ),
+          // overflow: TextOverflow.ellipsis,
         ),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
@@ -182,16 +188,22 @@ class TodoScreen extends StatelessWidget {
                 showUpdateDialog(context, todo.id, todo.title);
               },
             ),
-            Checkbox(
-              value: todo.isCompleted,
-              onChanged: (bool? value) async {
-                if (value != null) {
-                  await controller.toggleTodoStatus(todo.id);
-                }
-              },
-              activeColor: Colors.white,
-              checkColor: Colors.black,
-            ),
+            Transform.scale(
+              scale: 2,
+              child: Checkbox(
+                value: todo.isCompleted,
+                onChanged: (bool? value) async {
+                  if (value != null) {
+                    await controller.toggleTodoStatus(todo.id);
+                  }
+                },
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(6.0),
+                ),
+                activeColor: Colors.white,
+                checkColor: Colors.black,
+              ),
+            )
           ],
         ),
       ),
@@ -221,9 +233,17 @@ class TodoScreen extends StatelessWidget {
             ElevatedButton(
               onPressed: () async {
                 if (updateController.text.isNotEmpty) {
-                  await controller.updateTodo(id,
-                      newTitle: updateController.text);
+                  await controller.updateTodo(
+                    id,
+                    newTitle: updateController.text,
+                  );
                   Navigator.of(context).pop();
+
+                  Get.snackbar(
+                    'Task Updated',
+                    '${updateController.text} has been updated.',
+                    snackPosition: SnackPosition.TOP,
+                  );
                 }
               },
               child: const Text('Update'),

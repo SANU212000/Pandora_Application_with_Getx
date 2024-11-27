@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:todo_list/funtions/controller.dart';
+import 'package:todo_list/screens/constants.dart';
 
 class TaskListScreen extends StatelessWidget {
   final TodoController controller = Get.find<TodoController>();
@@ -12,12 +13,39 @@ class TaskListScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0.0,
+        automaticallyImplyLeading: false,
+        toolbarHeight: 80,
+        backgroundColor: kPrimaryColor,
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(bottom: Radius.circular(20.0)),
+        ),
+        flexibleSpace: Center(
+          child: Container(
+            padding: EdgeInsets.all(8.0),
+            decoration: BoxDecoration(
+                color: Colors.black.withOpacity(0.1),
+                shape: BoxShape.circle,
+                boxShadow: const [
+                  BoxShadow(
+                    color: Colors.black26,
+                    blurRadius: 2,
+                    offset: Offset(-0, -0),
+                  ),
+                ]),
+            child: IconButton(
+              icon: Icon(Icons.arrow_back, color: kWhiteColor),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ),
+        ),
+        centerTitle: true,
       ),
       body: Container(
         color: Colors.white,
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.only(top: 45.0, left: 16, right: 16),
         child: Column(
           children: [
             Row(
@@ -26,7 +54,9 @@ class TaskListScreen extends StatelessWidget {
                   child: Container(
                     decoration: BoxDecoration(
                       color: Colors.grey[200],
-                      borderRadius: BorderRadius.circular(30),
+                      borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(10),
+                          bottomLeft: Radius.circular(10)),
                     ),
                     padding: const EdgeInsets.symmetric(horizontal: 12),
                     child: TextField(
@@ -38,7 +68,7 @@ class TaskListScreen extends StatelessWidget {
                     ),
                   ),
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: 1),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     shape: const CircleBorder(),
@@ -50,7 +80,10 @@ class TaskListScreen extends StatelessWidget {
                       _textController.clear();
                     }
                   },
-                  child: const Icon(Icons.add),
+                  child: const Icon(
+                    Icons.add,
+                    color: kPrimaryColor,
+                  ),
                 ),
               ],
             ),

@@ -4,30 +4,28 @@ class Todo {
   String id;
   String title;
   bool isCompleted;
-  final Color color;
+  final Color? color;
 
   Todo({
     required this.id,
     required this.title,
-    this.isCompleted = false,
-    required this.color,
+    required this.isCompleted,
+    this.color,
   });
 
   factory Todo.fromJson(Map<String, dynamic> json) {
     return Todo(
-      id: json['id'] ?? '',
-      title: json['title'] ?? '',
-      isCompleted: json['isCompleted'] ?? false,
-      color: Color(json['color'] ?? 0xFFFFFFFF),
+      id: json['_id'],
+      title: json['title'],
+      isCompleted: json['isCompleted'],
+      color: json['color'] != null ? Color(json['color']) : null,
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
       'title': title,
       'isCompleted': isCompleted,
-      'color': color.value,
     };
   }
 }
