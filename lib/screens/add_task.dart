@@ -17,12 +17,12 @@ class TaskListScreen extends StatelessWidget {
         toolbarHeight: 80,
         backgroundColor: kPrimaryColor,
         elevation: 0,
-        shape: RoundedRectangleBorder(
+        shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(bottom: Radius.circular(20.0)),
         ),
         flexibleSpace: Center(
           child: Container(
-            padding: EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(8.0),
             decoration: BoxDecoration(
                 color: Colors.black.withOpacity(0.1),
                 shape: BoxShape.circle,
@@ -34,7 +34,7 @@ class TaskListScreen extends StatelessWidget {
                   ),
                 ]),
             child: IconButton(
-              icon: Icon(Icons.arrow_back, color: kWhiteColor),
+              icon: const Icon(Icons.arrow_back, color: kWhiteColor),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -54,7 +54,7 @@ class TaskListScreen extends StatelessWidget {
                   child: Container(
                     decoration: BoxDecoration(
                       color: Colors.grey[200],
-                      borderRadius: BorderRadius.only(
+                      borderRadius: const BorderRadius.only(
                           topLeft: Radius.circular(10),
                           bottomLeft: Radius.circular(10)),
                     ),

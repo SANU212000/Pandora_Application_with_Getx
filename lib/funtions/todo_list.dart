@@ -5,12 +5,14 @@ class Todo {
   String title;
   bool isCompleted;
   final Color? color;
+  // String userName;
 
   Todo({
     required this.id,
     required this.title,
     required this.isCompleted,
-    this.color,
+    required this.color,
+    // required this.userName
   });
 
   factory Todo.fromJson(Map<String, dynamic> json) {
@@ -19,6 +21,7 @@ class Todo {
       title: json['title'],
       isCompleted: json['isCompleted'],
       color: json['color'] != null ? Color(json['color']) : null,
+      // userName: json['username'],
     );
   }
 

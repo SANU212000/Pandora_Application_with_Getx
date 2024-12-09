@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:todo_list/screens/ListofUser.dart';
 import 'package:todo_list/screens/screen1.dart';
 import 'package:todo_list/screens/constants.dart';
 
@@ -20,38 +22,44 @@ class _IntroScreenState extends State<IntroScreen>
   void initState() {
     super.initState();
 
-    // Animation Controller
     _controller = AnimationController(
       duration: const Duration(seconds: 3),
       vsync: this,
     );
 
-    // Fade Animation for "Pandora"
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: _controller, curve: Curves.easeOut),
     );
 
-    // Fade Animation for "stability for your time"
     _fadeAnimationSecondary = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: const Interval(0.5, 1.0, curve: Curves.easeOut), // Starts later
+        curve: const Interval(0.5, 1.0, curve: Curves.easeOut),
       ),
     );
 
-    // Scale Animation for "Pandora"
     _scaleAnimation = Tween<double>(begin: 0.5, end: 2.0).animate(
       CurvedAnimation(parent: _controller, curve: Curves.bounceOut),
     );
 
-    // Start the animation
     _controller.forward();
 
-    // Navigate to HomeScreen after 4 seconds
+    _checkUsernameAndNavigate();
+  }
+
+  Future<void> _checkUsernameAndNavigate() async {
+    final prefs = await SharedPreferences.getInstance();
+    final hasUsername = prefs.containsKey('username');
+
     Future.delayed(const Duration(seconds: 4), () {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => TodoScreen()),
-      );
+      if (context.mounted) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (context) =>
+                hasUsername ? TodoScreen() : const UserListScreen(),
+          ),
+        );
+      }
     });
   }
 

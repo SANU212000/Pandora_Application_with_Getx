@@ -2,18 +2,38 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:todo_list/funtions/controller.dart';
 import 'package:todo_list/funtions/todo_list.dart';
+import 'package:todo_list/screens/ListofUser.dart';
 import 'package:todo_list/screens/add_task.dart';
 import 'package:todo_list/screens/constants.dart';
 
 class TodoScreen extends StatelessWidget {
   final TodoController controller = Get.put(TodoController());
 
+  final String username = Get.arguments ?? 'Guest';
   TodoScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        title: Text(
+          'Welcome, $username',
+          style: const TextStyle(color: Colors.white),
+        ),
+        leading: IconButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const UserListScreen(),
+              ),
+            );
+          },
+          icon: const Icon(
+            Icons.edit,
+            color: kPrimaryColor,
+          ),
+        ),
         backgroundColor: Colors.white,
         elevation: 0.0,
       ),
@@ -53,6 +73,12 @@ class TodoScreen extends StatelessWidget {
                       child: Padding(
                         padding: const EdgeInsets.only(top: 30.0, bottom: 14),
                         child: Obx(() {
+                          final controller = Get.find<TodoController>();
+                          if (controller.isLoading) {
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          }
                           if (controller.todos.isEmpty) {
                             return const Center(
                               child: Text(
@@ -62,7 +88,6 @@ class TodoScreen extends StatelessWidget {
                               ),
                             );
                           }
-
                           return AnimatedContainer(
                             duration: const Duration(milliseconds: 100),
                             curve: Curves.easeOut,

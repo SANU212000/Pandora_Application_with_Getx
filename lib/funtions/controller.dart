@@ -1,6 +1,5 @@
 import 'dart:math';
 import 'dart:ui';
-
 import 'package:get/get.dart';
 import 'package:uuid/uuid.dart';
 import 'package:http/http.dart' as http;
@@ -8,10 +7,12 @@ import 'dart:convert';
 import 'todo_list.dart';
 
 class TodoController extends GetxController {
-  var todos = <Todo>[].obs;
   final String apiUrl =
-      'https://crudcrud.com/api/11279db0bbdc4c05a6464b429cac2a14/todos';
-
+      'https://crudcrud.com/api/2d2b14976ead46349913f905f9e5e4f5/todos';
+  var myString = "".obs;
+  final bool _isLoading = false;
+  bool get isLoading => _isLoading;
+  RxList<Todo> todos = <Todo>[].obs;
   @override
   void onInit() {
     super.onInit();
