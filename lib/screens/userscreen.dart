@@ -1,20 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:todo_list/funtions/databasehelper.dart';
 
 class UserNameScreen extends StatelessWidget {
   const UserNameScreen({super.key});
 
   Future<void> saveUsername(String username) async {
-    final prefs = await SharedPreferences.getInstance();
-    final usernames = prefs.getStringList('usernames') ?? [];
-    usernames.add(username);
-    await prefs.setStringList('usernames', usernames);
+    final dbHelper = DatabaseHelper.instance;
+    await dbHelper.insertUsername(username);
+    final usernames = await dbHelper.getUsernames();
     print('Usernames saved: $usernames');
   }
 
   Future<void> _clearAllUsernames() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.clear();
+    final dbHelper = DatabaseHelper.instance;
+    await dbHelper.clearAllUsernames();
     print('All usernames removed');
   }
 

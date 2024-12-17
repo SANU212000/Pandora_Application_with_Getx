@@ -9,16 +9,18 @@ import 'package:todo_list/screens/constants.dart';
 class TodoScreen extends StatelessWidget {
   final TodoController controller = Get.put(TodoController());
 
-  final String username = Get.arguments ?? 'Guest';
   TodoScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final todoController = Get.find<TodoController>();
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          'Welcome, $username',
-          style: const TextStyle(color: Colors.white),
+        title: Obx(
+          () => Text(
+            'Welcome, ${todoController.username.value}',
+            style: const TextStyle(color: kPrimaryColor),
+          ),
         ),
         leading: IconButton(
           onPressed: () {
@@ -34,6 +36,19 @@ class TodoScreen extends StatelessWidget {
             color: kPrimaryColor,
           ),
         ),
+        actions: [
+          IconButton(
+            onPressed: () {
+              final themeProvider = Get.find<ThemeChanger>();
+              if (themeProvider.themeMode.value == ThemeMode.light) {
+                themeProvider.setTheme(ThemeOption.dark);
+              } else {
+                themeProvider.setTheme(ThemeOption.light);
+              }
+            },
+            icon: const Icon(Icons.brightness_6),
+          )
+        ],
         backgroundColor: Colors.white,
         elevation: 0.0,
       ),
@@ -202,7 +217,6 @@ class TodoScreen extends StatelessWidget {
             fontWeight: FontWeight.bold,
             color: todo.isCompleted ? Colors.black : Colors.white,
           ),
-          // overflow: TextOverflow.ellipsis,
         ),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,

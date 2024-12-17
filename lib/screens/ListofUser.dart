@@ -1,67 +1,180 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:todo_list/funtions/controller.dart';
+import 'package:todo_list/funtions/userSM.dart';
 import 'package:todo_list/screens/screen1.dart';
-import 'userscreen.dart';
 
 class UserListScreen extends StatelessWidget {
   const UserListScreen({super.key});
 
-  Future<List<String>> loadUsernames() async {
-    final prefs = await SharedPreferences.getInstance();
-    final usernames = prefs.getStringList('usernames') ?? [];
-    print('Loaded usernames: $usernames');
-    return usernames;
-  }
-
   @override
   Widget build(BuildContext context) {
+    final UserNameController userNameController = Get.put(UserNameController());
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Usernames'),
+        actions: [
+          IconButton(
+            onPressed: () {
+              final themeProvider = Get.find<ThemeChanger>();
+              if (themeProvider.themeMode.value == ThemeMode.light) {
+                themeProvider.setTheme(ThemeOption.dark);
+              } else {
+                themeProvider.setTheme(ThemeOption.light);
+              }
+            },
+            icon: const Icon(Icons.brightness_6),
+          )
+        ],
         backgroundColor: Colors.blue,
       ),
-      body: FutureBuilder<List<String>>(
-        future: loadUsernames(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+      body: Obx(
+        () {
+          if (userNameController.username.isEmpty) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
           }
+          return Padding(
+            padding: const EdgeInsets.all(40.0),
+            child: ListView.builder(
+              itemCount: userNameController.username.length,
+              itemBuilder: (context, index) {
+                final selectedUsername = userNameController.username[index];
 
-          if (snapshot.hasError) {
-            return const Center(child: Text('Error loading usernames.'));
-          }
-
-          if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(child: Text('No usernames available.'));
-          }
-
-          final usernames = snapshot.data!;
-
-          return ListView.builder(
-            itemCount: usernames.length,
-            itemBuilder: (context, index) {
-              final selectedUsername = usernames[index];
-              return ListTile(
-                title: Text(selectedUsername),
-                onTap: () {
-                  Get.to(() => TodoScreen(), arguments: selectedUsername);
-                },
-              );
-            },
+                return Card(
+                  margin: const EdgeInsets.symmetric(vertical: 8.0),
+                  elevation: 3,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: ListTile(
+                    contentPadding: const EdgeInsets.symmetric(
+                      vertical: 8.0,
+                      horizontal: 16.0,
+                    ),
+                    title: Text(
+                      selectedUsername,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w500,
+                        fontSize: 16,
+                      ),
+                    ),
+                    onTap: () {
+                      Get.lazyPut(() => TodoController());
+                      final todoController = Get.find<TodoController>();
+                      todoController.setUsername(selectedUsername);
+                      Get.to(() => TodoScreen());
+                      print("$selectedUsername is tapped");
+                    },
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.edit, color: Colors.blue),
+                          onPressed: () async {
+                            String newUsername = await showEditUsernameDialog(
+                                context, selectedUsername);
+                            if (newUsername.isNotEmpty) {
+                              await userNameController.updateUsername(
+                                  selectedUsername, newUsername);
+                            }
+                          },
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.delete, color: Colors.red),
+                          onPressed: () async {
+                            await userNameController
+                                .deleteUsername(selectedUsername);
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
           );
         },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const UserNameScreen()),
-          );
-        },
+        onPressed: () => showAddUsernameDialog(context, userNameController),
         backgroundColor: Colors.blue,
         child: const Icon(Icons.add),
       ),
     );
   }
+}
+
+void showAddUsernameDialog(
+    BuildContext context, UserNameController usernameController) {
+  final TextEditingController userNameController = TextEditingController();
+
+  showDialog(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        title: const Text('Add New Username'),
+        content: TextField(
+          controller: userNameController,
+          decoration: const InputDecoration(hintText: 'Enter username'),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () async {
+              String username = userNameController.text;
+              if (username.isNotEmpty) {
+                await usernameController.addUsername(username);
+                Navigator.of(context).pop();
+              }
+            },
+            child: const Text('Add'),
+          ),
+        ],
+      );
+    },
+  );
+}
+
+Future<String> showEditUsernameDialog(
+    BuildContext context, String oldUsername) async {
+  final TextEditingController usernameController =
+      TextEditingController(text: oldUsername);
+
+  String newUsername = oldUsername;
+
+  await showDialog(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        title: const Text('Edit Username'),
+        content: TextField(
+          controller: usernameController,
+          decoration: const InputDecoration(hintText: 'Enter new username'),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              newUsername = usernameController.text;
+              Navigator.of(context).pop();
+            },
+            child: const Text('Save'),
+          ),
+        ],
+      );
+    },
+  );
+  return newUsername;
 }

@@ -1,13 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+// import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+import 'package:todo_list/funtions/controller.dart';
+import 'package:todo_list/funtions/databasehelper.dart';
 import 'package:todo_list/screens/navigation.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  final prefs = await SharedPreferences.getInstance();
-  final hasUsername = prefs.containsKey('username');
+  final dbHelper = DatabaseHelper.instance;
+  final usernames = await dbHelper.getUsernames();
+  // final hasUsername = usernames.isNotEmpty;
+  final themeChanger = Get.put(ThemeChanger());
+  await themeChanger.loadtheme();
 
   runApp(TodoApp(
-    initialRoute: hasUsername ? '/home' : '/userScreen',
+    initialRoute: '/' '/userScreen',
   ));
 }

@@ -12,31 +12,36 @@ class TodoApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(
-      title: 'Todo App',
-      initialBinding: BindingsBuilder(() {
-        Get.put(TodoController());
-      }),
-      debugShowCheckedModeBanner: false,
-      initialRoute: initialRoute,
-      getPages: [
-        GetPage(
-          name: '/',
-          page: () => const IntroScreen(),
-        ),
-        GetPage(
-          name: '/userScreen',
-          page: () => const UserListScreen(),
-        ),
-        GetPage(
-          name: '/home',
-          page: () => TodoScreen(), // Replace 'Guest' with default username.
-        ),
-        GetPage(
-          name: '/TodoScreen',
-          page: () => TodoScreen(),
-        ),
-      ],
-    );
+    final themechanger = Get.find<ThemeChanger>();
+
+    return Obx(() => GetMaterialApp(
+          title: 'Todo App',
+          theme: ThemeData.light(),
+          darkTheme: ThemeData.dark(),
+          themeMode: themechanger.themeMode.value,
+          debugShowCheckedModeBanner: false,
+          initialRoute: initialRoute,
+          getPages: [
+            GetPage(
+              name: '/',
+              page: () => const IntroScreen(),
+            ),
+            GetPage(
+              name: '/userScreen',
+              page: () => const UserListScreen(),
+            ),
+            GetPage(
+              name: '/home',
+              page: () => TodoScreen(),
+            ),
+            GetPage(
+              name: '/TodoScreen',
+              page: () => TodoScreen(),
+              binding: BindingsBuilder(() {
+                Get.put(TodoController());
+              }),
+            ),
+          ],
+        ));
   }
 }
