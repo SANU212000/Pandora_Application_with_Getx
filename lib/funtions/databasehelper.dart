@@ -33,6 +33,13 @@ class DatabaseHelper {
         $columnUsername TEXT NOT NULL
       )
     ''');
+    db.execute('''
+      CREATE TABLE sanu(
+        id INTEGER PRIMARY KEY,
+        name TEXT,
+        table_id INTEGER,
+        FOREIGN KEY (table_id) REFRENCES tableUsername(columnId)
+     ''');
   }
 
   Future<int> insertUsername(String username) async {
