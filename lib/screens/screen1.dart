@@ -1,15 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:todo_list/funtions/controller.dart';
 import 'package:todo_list/funtions/todo_list.dart';
-import 'package:todo_list/screens/ListofUser.dart';
+import 'package:todo_list/screens/loginpage.dart';
 import 'package:todo_list/screens/add_task.dart';
-import 'package:todo_list/screens/constants.dart';
+import 'package:todo_list/funtions/constants.dart';
 
 class TodoScreen extends StatelessWidget {
   final TodoController controller = Get.put(TodoController());
 
-  TodoScreen({super.key});
+  final String email;
+
+  TodoScreen({required this.email, super.key}) {
+    name = email.substring(0, 4);
+    print("name=$name");
+  }
+  late String name;
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +25,7 @@ class TodoScreen extends StatelessWidget {
       appBar: AppBar(
         title: Obx(
           () => Text(
-            'Welcome, ${todoController.username.value}',
+            'Welcome, $name',
             style: const TextStyle(color: kPrimaryColor),
           ),
         ),
@@ -27,7 +34,7 @@ class TodoScreen extends StatelessWidget {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => const UserListScreen(),
+                builder: (context) => const Login(),
               ),
             );
           },
@@ -47,6 +54,12 @@ class TodoScreen extends StatelessWidget {
               }
             },
             icon: const Icon(Icons.brightness_6),
+          ),
+          IconButton(
+            onPressed: () async {
+              await logout(context);
+            },
+            icon: const Icon(Icons.logout),
           )
         ],
         backgroundColor: Colors.white,
@@ -292,4 +305,16 @@ class TodoScreen extends StatelessWidget {
       },
     );
   }
+}
+
+Future<void> logout(BuildContext context) async {
+  final SharedPreferences prefs = await SharedPreferences.getInstance();
+  await prefs.remove('accessToken');
+  await prefs.remove('refreshToken');
+
+  Navigator.pushAndRemoveUntil(
+    context,
+    MaterialPageRoute(builder: (context) => const Login()),
+    (route) => false,
+  );
 }

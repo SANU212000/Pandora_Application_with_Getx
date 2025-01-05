@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:todo_list/funtions/controller.dart';
-import 'package:todo_list/screens/constants.dart';
+import 'package:todo_list/funtions/constants.dart';
 
 class TaskListScreen extends StatelessWidget {
   final TodoController controller = Get.find<TodoController>();
